@@ -5,20 +5,48 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
+  Button,
   Flex,
   Heading,
+  List,
+  ListItem,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  useToast,
 } from '@chakra-ui/react';
-import React, { useCallback } from 'react';
-import { useInteractable } from '../../../classes/TownController';
+import { set } from 'lodash';
+import React, { useCallback, useEffect, useState } from 'react';
+import ConnectFourAreaController, {
+  ConnectFourEvents,
+} from '../../../classes/interactable/ConnectFourAreaController';
+import GameAreaController, {
+  GameEventTypes,
+} from '../../../classes/interactable/GameAreaController';
+import State from '../../../classes/interactable/GameAreaController';
+import EventTypes from '../../../classes/interactable/GameAreaController';
+import TicTacToeAreaController, {
+  TicTacToeEvents,
+} from '../../../classes/interactable/TicTacToeAreaController';
+import PlayerController from '../../../classes/PlayerController';
+import { useInteractable, useInteractableAreaController } from '../../../classes/TownController';
 import useTownController from '../../../hooks/useTownController';
-import { InteractableID } from '../../../types/CoveyTownSocket';
+import {
+  ConnectFourGameState,
+  GameResult,
+  GameState,
+  GameStatus,
+  InteractableID,
+  TicTacToeGameState,
+} from '../../../types/CoveyTownSocket';
+import ChatChannel from './ChatChannel';
+import ConnectFourArea from './ConnectFour/ConnectFourArea';
 import GameAreaInteractable from './GameArea';
+import Leaderboard from './Leaderboard';
+import TicTacToeArea from './TicTacToe/TicTacToeArea';
 
 export const INVALID_GAME_AREA_TYPE_MESSAGE = 'Invalid game area type';
 
@@ -37,6 +65,25 @@ export const INVALID_GAME_AREA_TYPE_MESSAGE = 'Invalid game area type';
  *
  */
 function GameArea({ interactableID }: { interactableID: InteractableID }): JSX.Element {
+  const gameAreaController =
+    useInteractableAreaController<GameAreaController<GameState, GameEventTypes>>(interactableID);
+
+  const [history, setHistory] = useState<GameResult[]>(gameAreaController.history);
+  const [observers, setObservers] = useState<PlayerController[]>(gameAreaController.observers);
+  const [type, setType] = useState<string>(gameAreaController.toInteractableAreaModel().type);
+
+  useEffect(() => {
+    const updateGameState = () => {
+      setType(gameAreaController.toInteractableAreaModel().type);
+      setHistory(gameAreaController.history);
+      setObservers(gameAreaController.observers);
+    };
+    gameAreaController.addListener('gameUpdated', updateGameState);
+    return () => {
+      gameAreaController.removeListener('gameUpdated', updateGameState);
+    };
+  }, [gameAreaController]);
+
   return (
     <>
       <Accordion allowToggle>
@@ -48,7 +95,9 @@ function GameArea({ interactableID }: { interactableID: InteractableID }): JSX.E
               </Box>
               <AccordionIcon />
             </AccordionButton>
-            <AccordionPanel>Leaderboard should probably go here</AccordionPanel>
+            <AccordionPanel>
+              <Leaderboard results={history} />
+            </AccordionPanel>
           </Heading>
         </AccordionItem>
         <AccordionItem>
@@ -60,11 +109,25 @@ function GameArea({ interactableID }: { interactableID: InteractableID }): JSX.E
               </Box>
             </AccordionButton>
           </Heading>
-          <AccordionPanel>Observers list should probably go here</AccordionPanel>
+          <AccordionPanel>
+            <List aria-label='list of observers in the game'>
+              {observers.map(observer => {
+                return <ListItem key={observer.id}>{observer.userName}</ListItem>;
+              })}
+            </List>
+          </AccordionPanel>
         </AccordionItem>
       </Accordion>
       <Flex>
-        <Box>The game area for {interactableID} might go well in this box</Box>
+        <Box>
+          {type === 'ConnectFourArea' ? (
+            <ConnectFourArea interactableID={gameAreaController.id} />
+          ) : type === 'TicTacToeArea' ? (
+            <TicTacToeArea interactableID={gameAreaController.id} />
+          ) : (
+            <Box> {INVALID_GAME_AREA_TYPE_MESSAGE} </Box>
+          )}
+        </Box>
         <Box
           style={{
             height: '400px',
@@ -76,7 +139,7 @@ function GameArea({ interactableID }: { interactableID: InteractableID }): JSX.E
               display: 'flex',
               flexDirection: 'column',
             }}>
-            Chat channel should probably go here
+            <ChatChannel interactableID={gameAreaController.id} />
           </div>
         </Box>
       </Flex>
