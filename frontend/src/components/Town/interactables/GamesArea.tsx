@@ -5,7 +5,6 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
-  Button,
   Flex,
   Heading,
   List,
@@ -16,32 +15,15 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  useToast,
 } from '@chakra-ui/react';
-import { set } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
-import ConnectFourAreaController, {
-  ConnectFourEvents,
-} from '../../../classes/interactable/ConnectFourAreaController';
 import GameAreaController, {
   GameEventTypes,
 } from '../../../classes/interactable/GameAreaController';
-import State from '../../../classes/interactable/GameAreaController';
-import EventTypes from '../../../classes/interactable/GameAreaController';
-import TicTacToeAreaController, {
-  TicTacToeEvents,
-} from '../../../classes/interactable/TicTacToeAreaController';
 import PlayerController from '../../../classes/PlayerController';
 import { useInteractable, useInteractableAreaController } from '../../../classes/TownController';
 import useTownController from '../../../hooks/useTownController';
-import {
-  ConnectFourGameState,
-  GameResult,
-  GameState,
-  GameStatus,
-  InteractableID,
-  TicTacToeGameState,
-} from '../../../types/CoveyTownSocket';
+import { GameResult, GameState, InteractableID } from '../../../types/CoveyTownSocket';
 import ChatChannel from './ChatChannel';
 import ConnectFourArea from './ConnectFour/ConnectFourArea';
 import GameAreaInteractable from './GameArea';
