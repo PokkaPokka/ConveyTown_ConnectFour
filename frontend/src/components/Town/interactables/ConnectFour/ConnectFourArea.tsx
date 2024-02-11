@@ -161,9 +161,11 @@ export default function ConnectFourArea({
     gameStatusText = (
       <b>
         Game{' '}
-        {gameStatus === 'WAITING_FOR_PLAYERS' ? 'waiting for players to join' : 'reday to start'}.{' '}
+        {gameStatus === 'WAITING_FOR_PLAYERS' ? 'Waiting for players to join' : 'reday to start'}.{' '}
         {joinGameButton}
-        Game {gameStatus === 'WAITING_TO_START' ? 'not yet started' : 'over'}. {startGameButton}
+        Game {gameStatus === 'WAITING_TO_START'
+          ? 'Waiting for players to press start'
+          : 'over'}. {startGameButton}
       </b>
     );
   }
