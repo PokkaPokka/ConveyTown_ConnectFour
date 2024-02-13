@@ -24,7 +24,7 @@ const StyledConnectFourSquare = chakra(Button, {
     flexBasis: '14%',
     border: '1px solid black',
     height: '14%',
-    fontSize: '50px',
+    fontSize: '10px',
     _disabled: {
       opacity: '100%',
     },

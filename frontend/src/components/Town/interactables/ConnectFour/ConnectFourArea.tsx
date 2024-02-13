@@ -63,7 +63,7 @@ export default function ConnectFourArea({
 
   useEffect(() => {
     const updateGameState = () => {
-      setGameStatus(gameAreaController.status || 'WAITING_TO_START');
+      setGameStatus(gameAreaController.status || 'WAITING_FOR_PLAYERS');
       setMoveCount(gameAreaController.moveCount || 0);
       setRed(gameAreaController.red);
       setYellow(gameAreaController.yellow);
@@ -110,12 +110,9 @@ export default function ConnectFourArea({
       </>
     );
   } else {
-    let joinGameButton = <></>;
     let startGameButton = <></>;
-    if (
-      gameAreaController.status === 'OVER' ||
-      gameAreaController.status === 'WAITING_FOR_PLAYERS'
-    ) {
+    let joinGameButton = <></>;
+    if (gameStatus === 'OVER' || gameStatus === 'WAITING_FOR_PLAYERS') {
       joinGameButton = (
         <Button
           onClick={async () => {
@@ -136,7 +133,7 @@ export default function ConnectFourArea({
           Join New Game
         </Button>
       );
-    } else if (gameAreaController.status === 'WAITING_TO_START') {
+    } else if (gameStatus === 'WAITING_TO_START') {
       startGameButton = (
         <Button
           onClick={async () => {
@@ -160,12 +157,11 @@ export default function ConnectFourArea({
     }
     gameStatusText = (
       <b>
-        Game{' '}
-        {gameStatus === 'WAITING_FOR_PLAYERS' ? 'Waiting for players to join' : 'reday to start'}.{' '}
+        {gameStatus === 'WAITING_FOR_PLAYERS' ? 'Game waiting for players to join' : ''}
         {joinGameButton}
-        Game {gameStatus === 'WAITING_TO_START'
-          ? 'Waiting for players to press start'
-          : 'over'}. {startGameButton}
+        {gameStatus === 'WAITING_TO_START' ? 'Game waiting for players to press start' : ''}
+        {startGameButton}
+        {gameStatus === 'OVER' ? 'Game over' : ''}
       </b>
     );
   }
