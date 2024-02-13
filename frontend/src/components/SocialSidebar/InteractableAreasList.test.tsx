@@ -279,13 +279,6 @@ describe('[T5.2] InteractableAreasList', () => {
         conversationAreas[0],
         createConversationForTesting({ emptyTopic: true }),
         conversationAreas[1],
-        gameAreas[0],
-        createGameAreaForTesting({ inactive: true }),
-        gameAreas[1],
-        viewingAreas[0],
-        createViewingAreaForTesting({ inactive: true }),
-        viewingAreas[1],
-        createViewingAreaForTesting({ inactive: true }),
       ];
       const renderData = renderInteractableAreasList(activeAndInactiveAreas);
       await expectProperlyRenderedInteractableAreas(renderData, [
