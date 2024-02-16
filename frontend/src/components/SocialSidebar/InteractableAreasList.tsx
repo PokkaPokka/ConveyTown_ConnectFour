@@ -24,7 +24,7 @@ function InteractableAreaView({ area }: InteractableAreaViewProps): JSX.Element 
   return (
     <Box>
       <Heading as='h4' fontSize='m'>
-        {area.isActive() && friendlyNames}
+        {friendlyNames}
       </Heading>
       <UnorderedList>
         {occupants.map(occupant => {
@@ -53,22 +53,25 @@ function InteractableAreaView({ area }: InteractableAreaViewProps): JSX.Element 
  */
 export default function InteractableAreasList(): JSX.Element {
   const activeInteractableAreas = useActiveInteractableAreas();
-  const displayed: string[] = [];
 
   // Group areas by type and sort groups alphabetically by type name
-  const groupedAreas: { [key: string]: any[] } = activeInteractableAreas.reduce(
-    (groups: { [key: string]: any[] }, area: GenericInteractableAreaController) => {
-      (groups[area.type] = groups[area.type] || []).push(area);
-      return groups;
-    },
-    {},
-  );
+  const groupedAreas: { [key: string]: GenericInteractableAreaController[] } =
+    activeInteractableAreas.reduce(
+      (
+        groups: { [key: string]: GenericInteractableAreaController[] },
+        area: GenericInteractableAreaController,
+      ) => {
+        (groups[area.type] = groups[area.type] || []).push(area);
+        return groups;
+      },
+      {},
+    );
   const areaTypes = Object.keys(groupedAreas).sort();
 
-  console.log(areaTypes.length);
   if (areaTypes.length === 0) {
     return <>No active areas</>;
   }
+
   return (
     <Box>
       {areaTypes.map(type => (
@@ -76,11 +79,10 @@ export default function InteractableAreasList(): JSX.Element {
           <Heading as='h3' fontSize='l'>
             {type}s
           </Heading>
-          {displayed.push(type)}
           {groupedAreas[type]
             .sort((a1, a2) => {
               // Sort by number of occupants
-              const occupantsComparison = a2.occupants.length - a1.occupants.length;
+              const occupantsComparison: number = a2.occupants.length - a1.occupants.length;
               // If number of occupants is the same, sort by name
               if (occupantsComparison === 0) {
                 return a1.id.localeCompare(a2.id, undefined, {
@@ -91,7 +93,7 @@ export default function InteractableAreasList(): JSX.Element {
               return occupantsComparison;
             })
             .map((area: GenericInteractableAreaController) => (
-              <Box key={area.id}>{area.isActive() && <InteractableAreaView area={area} />}</Box>
+              <Box key={area.id}>{<InteractableAreaView area={area} />}</Box>
             ))}
         </Box>
       ))}
